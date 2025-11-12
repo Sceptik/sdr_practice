@@ -1,0 +1,3 @@
+/home/iluha/dev/build/CMakeFiles/main.dir
+/home/iluha/dev/build/CMakeFiles/edit_cache.dir
+/home/iluha/dev/build/CMakeFiles/rebuild_cache.dir
