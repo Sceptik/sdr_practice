@@ -12,3 +12,4 @@ vector<vector<int16_t>> coder(vector<int16_t> generated_bits);
 vector<int16_t> qpsk_modulation(vector<vector<int16_t>>& bits);
 vector<int16_t> filter(vector<int16_t> qpsk_symbols, int L, int size);
 vector<int16_t> my_ready_samples();
+vector<int16_t> m_filter(int16_t tx_buff[2 * 1920], int L, int size);
