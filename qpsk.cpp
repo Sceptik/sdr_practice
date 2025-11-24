@@ -102,8 +102,31 @@ vector<int16_t> filter(vector<int16_t> qpsk_symbols, int L, int size){
     return result;
 }
 
+vector<int16_t> m_filter(int16_t tx_buff[2 * 1920], int L, int size){
+    int size_arr = L * size;
+    vector<int16_t> g(L, 1);
+    vector<int16_t> x(size_arr, 0);
+    vector<int16_t> result(size_arr, 0);
+
+    for(int i = 0; i < size_arr; i += L){
+        int idx = i / L;
+        x[i] = tx_buff[idx];
+    }
+    
+    for(int i = 0; i < size_arr; i++){
+        int16_t tmp = 0;
+        for(int m = 0; m < L; m++){
+            if(i - m >= 0){                                 
+                tmp += x[i - m] * g[m];
+            }
+        }
+        result[i] = tmp;
+    }
+    return result;
+}
+
 vector<int16_t> my_ready_samples(){
-    int size = 12;
+    int size = 192;
     int sample_rate = 32;
 
     vector<int16_t> generated_bits = generate_bits(size);
