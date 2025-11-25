@@ -108,22 +108,29 @@ vector<int16_t> m_filter(int16_t tx_buff[2 * 1920], int L, int size){
     vector<int16_t> x(size_arr, 0);
     vector<int16_t> result(size_arr, 0);
 
-    for(int i = 0; i < size_arr; i += L){
-        int idx = i / L;
-        x[i] = tx_buff[idx];
-    }
-    
     for(int i = 0; i < size_arr; i++){
         int16_t tmp = 0;
         for(int m = 0; m < L; m++){
             if(i - m >= 0){                                 
-                tmp += x[i - m] * g[m];
+                tmp += tx_buff[i - m] * g[m];
             }
         }
         result[i] = tmp;
     }
     return result;
 }
+
+vector<int16_t> downsampling(vector<int16_t> filtered, int size, int L){
+    vector<int16_t> downsampled(size);
+    for(int i = 0; i < size -1; i+=2){
+        downsampled[i] = filtered[i * 20];
+        downsampled[i+1] = filtered[i * 20 + 1];
+    }
+
+    return downsampled;
+}
+
+
 
 vector<int16_t> my_ready_samples(){
     int size = 192;

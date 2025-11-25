@@ -107,6 +107,9 @@ int main(){
         
         // считали буффер RX, записали его в rx_buffer
         int sr = SoapySDRDevice_readStream(sdr, rxStream, rx_buffs, rx_mtu, &flags, &timeNs, timeoutUs);
+        // for(int i =0; i < rx_mtu; i++){
+        //     printf("rx_buff[%d] = %d \n", i, rx_buffer[i]);
+        // }
 
         if(buffers_read > 0){
             fwrite(rx_buffer, 2* rx_mtu * sizeof(int16_t), 1, file);
@@ -115,20 +118,7 @@ int main(){
         }
         
         vector<int16_t> m_filtered = m_filter(rx_buffer, 10, 192);
-        fwrite(m_filtered.data(), sizeof(int16_t), m_filtered.size(), file3);
-
-
-        //Освобождаем память
-        //stop streaming
-        SoapySDRDevice_deactivateStream(sdr, rxStream, 0, 0);
-        SoapySDRDevice_deactivateStream(sdr, txStream, 0, 0);
-
-        //shutdown the stream
-        SoapySDRDevice_closeStream(sdr, rxStream);
-        SoapySDRDevice_closeStream(sdr, txStream);
-
-        //cleanup device handle
-        SoapySDRDevice_unmake(sdr);
+        fwrite(m_filtered.data(), sizeof(int16_t) * m_filtered.size(),1, file3);
 
         
         for(size_t i = 0; i < 2; i++)
@@ -151,18 +141,28 @@ int main(){
         // Здесь отправляем наш tx_buff массив
         void *tx_buffs[] = {tx_buff};
         flags = SOAPY_SDR_HAS_TIME;
-    
-        int st = SoapySDRDevice_writeStream(sdr, txStream, (const void * const*)tx_buffs, tx_mtu, &flags, tx_time, timeoutUs);
         // for(int i =0; i < rx_mtu; i++){
         //     printf("rx_buff[%d] = %d \n", i, tx_buff[i]);
         // }
+    
+        int st = SoapySDRDevice_writeStream(sdr, txStream, (const void * const*)tx_buffs, tx_mtu, &flags, tx_time, timeoutUs);
         fwrite(tx_buff, 2* tx_mtu * sizeof(int16_t), 1, file1);
         if ((size_t)st != tx_mtu)
         {
             printf("TX Failed: %in", st);
         }
     } 
-    
+        //Освобождаем память
+    //stop streaming
+    SoapySDRDevice_deactivateStream(sdr, rxStream, 0, 0);
+    SoapySDRDevice_deactivateStream(sdr, txStream, 0, 0);
+
+    //shutdown the stream
+    SoapySDRDevice_closeStream(sdr, rxStream);
+    SoapySDRDevice_closeStream(sdr, txStream);
+
+    //cleanup device handle
+    SoapySDRDevice_unmake(sdr);
     fclose(file);
     fclose(file1);
 }
